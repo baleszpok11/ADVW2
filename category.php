@@ -2,25 +2,35 @@
 require_once 'functions.php';
 
 // Az eredeti bemenet
-$cat = " na2t5u25re spo12r54t funn82y cake2! 8sea au#!tumn!";
+$cat = "na2t5u25re spo12r54t funn82y cake2! 8sea au#!tumn!";
+$categories_from_function = getCategories($cat);
 
-// A getCategories függvény meghívása
-$cat_temp = getCategories($cat);
-
-// Az új tömb létrehozása
+// Kategóriák tömb inicializálása
 $categories = [];
-foreach ($cat_temp as $item) {
-    // Számok és betűk különválasztása
-    if (preg_match('/(\d+)([a-zA-Z]+)/', $item, $matches)) {
-        $index = (int)$matches[1] + rand(1000, 5000); // Véletlen szám hozzáadása
-        $categories[$index] = $matches[2]; // Érték hozzárendelése
+
+// A szűrt kategóriák feldolgozása
+foreach ($categories_from_function as $word) {
+    // Számokat kinyerjük az adott szóból
+    preg_match_all('/\d+/', $word, $matches);
+    $numbers = implode('', $matches[0]); // Számokat összefűzzük
+
+    // Karaktereket kinyerjük (nem számokat)
+    $letters = preg_replace('/\d/', '', $word);
+
+    // Csak akkor dolgozunk vele, ha van szám és betű is
+    if (!empty($numbers) && !empty($letters)) {
+        // Véletlenszerű szám hozzáadása az indexhez
+        $randomizedIndex = intval($numbers) + rand(1000, 5000);
+
+        // A tömb feltöltése az új indexel
+        $categories[$randomizedIndex] = $letters;
     }
 }
 
-// Indexek szerint növekvő sorrendbe rendezés
+// Indexek szerinti rendezés növekvő sorrendben
 ksort($categories);
 
-// Eredmény kiíratása (teszt)
-foreach ($categories as $index => $value) {
-    echo "Index: $index Value: $value\n";
-}
+// Eredmény kiíratása
+echo '<pre>';
+print_r($categories);
+echo '</pre>';

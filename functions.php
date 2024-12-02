@@ -1,9 +1,10 @@
 <?php
-
+require_once 'config.php';
 /**
  * @throws Exception
  */
-function connectToDatabase(): PDO {
+function connectToDatabase(): PDO
+{
     // Importáljuk a konfigurációs konstansot
     if (!defined('DB_CONFIG')) {
         throw new Exception("Adatbázis konfiguráció nincs definiálva.");
@@ -25,20 +26,18 @@ function connectToDatabase(): PDO {
         throw new Exception("Adatbázis kapcsolódási hiba: " . $e->getMessage());
     }
 }
-function getCategories(string $cat): array {
+
+function getCategories(string $cat): array
+{
     // Szavak szétválasztása szóköz mentén
     $cat_temp = explode(' ', $cat);
 
-    // Szavak megtisztítása nem alfanumerikus karakterektől
-    $cleaned = array_map(function ($word) {
-        return preg_replace('/[^a-zA-Z0-9]/', '', $word);
-    }, $cat_temp);
-
-    // Csak azok a szavak maradnak, amelyek hossza nagyobb mint 4
-    $filtered = array_filter($cleaned, function ($word) {
-        return strlen($word) > 4;
+    // Szavak megtisztítása nem alfanumerikus karakterektől és feltételek ellenőrzése
+    $filtered = array_filter($cat_temp, function ($word) {
+        // Csak akkor vesszük figyelembe, ha csak számokat és betűket tartalmaz, és hossza > 4
+        return preg_match('/^[a-zA-Z0-9]+$/', $word) && strlen($word) > 4;
     });
 
-    // Visszatérés a tömbbel
-    return array_values($filtered); // Indexek újraszámozása
+    // Visszatérés a szűrt tömbbel, indexek újraszámozása
+    return array_values($filtered);
 }
